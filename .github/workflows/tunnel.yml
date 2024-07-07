@@ -1,0 +1,40 @@
+name: Build Cloudflare Tunnel on FreeBSD
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up QEMU
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y qemu qemu-user-static
+
+    - name: Set up FreeBSD environment
+      run: |
+        docker run --name freebsd -d -e ASSUME_ALWAYS_YES=yes freebsd:latest
+        docker exec freebsd pkg install -y git
+
+    - name: Install Go 1.22.2
+      run: |
+        docker exec freebsd sh -c "cd /usr/local && wget https://golang.org/dl/go1.22.2.freebsd-amd64.tar.gz"
+        docker exec freebsd sh -c "cd /usr/local && tar -xzf go1.22.2.freebsd-amd64.tar.gz"
+        docker exec freebsd sh -c "ln -s /usr/local/go/bin/go /usr/local/bin/go"
+        docker exec freebsd sh -c "ln -s /usr/local/go/bin/gofmt /usr/local/bin/gofmt"
+        docker exec freebsd sh -c "go version"
+
+    - name: Build Cloudflare Tunnel
+      run: |
+        docker exec freebsd git clone https://github.com/cloudflare/cloudflared.git
+        docker exec freebsd sh -c "cd cloudflared && /usr/local/bin/go build"
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: cloudflare-tunnel
+        path: cloudflared/cloudflared
