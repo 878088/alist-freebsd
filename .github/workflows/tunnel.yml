@@ -17,7 +17,7 @@ jobs:
 
     - name: Set up FreeBSD environment
       run: |
-        docker run --name freebsd -d -e ASSUME_ALWAYS_YES=yes freebsdxc/freebsd:latest
+        docker run --name freebsd -d -e ASSUME_ALWAYS_YES=yes freebsdxc/freebsd:14.0
         docker exec freebsd pkg install -y git
 
     - name: Install Go 1.22.2
