@@ -10,11 +10,11 @@ jobs:
     - name: Set up FreeBSD VM
       uses: vmactions/freebsd-vm@v1.0.8
       with:
-        version: '14.0'  # You can指定 FreeBSD的版本
+        version: '14.0'
 
     - name: Install dependencies
       run: |
-        pkg install -y node wget curl git make gcc bash gawk gsed
+        pkg install -y node wget curl git gcc bash gawk gsed
 
     - name: Clone cloudflared repository
       run: |
