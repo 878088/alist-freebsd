@@ -11,7 +11,7 @@ jobs:
       uses: vmactions/freebsd-vm@v1.0.8
       with:
         usesh: true
-        version: '14.0'
+        version: '13.2'
         prepare: |
           pkg install -y node wget curl git go1.22.2 gcc bash gawk gsed
           ln -s /usr/local/bin/go1.22.2 /usr/local/bin/go
