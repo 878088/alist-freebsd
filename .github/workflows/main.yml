@@ -1,12 +1,6 @@
 name: Build cloudflared
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: workflow_dispatch
 
 jobs:
   build:
@@ -16,11 +10,17 @@ jobs:
     - name: Set up FreeBSD VM
       uses: vmactions/freebsd-vm@v1.0.8
       with:
-        version: '12.2'  # You can指定 FreeBSD的版本
+        version: '14.0'  # You can指定 FreeBSD的版本
 
     - name: Install dependencies
       run: |
-        sudo pkg install -y go git gmake
+        pkg install -y node wget curl git make gcc bash gawk gsed
+
+    - name: Clone cloudflared repository
+      run: |
+        git clone https://github.com/cloudflare/cloudflared
+        cd cloudflared
+        ./.teamcity/install-cloudflare-go.sh
 
     - name: Set up Go environment
       run: |
@@ -29,17 +29,11 @@ jobs:
         source ~/.profile
         go version
 
-    - name: Clone cloudflared repository
-      run: |
-        git clone https://github.com/cloudflare/cloudflared
-        cd cloudflared
-        ./.teamcity/install-cloudflare-go.sh
-
     - name: Build cloudflared
       run: |
         source ~/.profile
         cd cloudflared
-        PATH="/tmp/go/bin:$PATH" gmake cloudflared
+        PATH="/tmp/go/bin:$PATH" make cloudflared
 
     - name: Upload cloudflared binary
       uses: actions/upload-artifact@v2
