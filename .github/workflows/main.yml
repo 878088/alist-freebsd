@@ -1,0 +1,48 @@
+name: Build cloudflared
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up FreeBSD VM
+      uses: vmactions/freebsd-vm@v1.0.8
+      with:
+        version: '12.2'  # You can指定 FreeBSD的版本
+
+    - name: Install dependencies
+      run: |
+        sudo pkg install -y go git gmake
+
+    - name: Set up Go environment
+      run: |
+        echo 'export GOPATH=$HOME/go' >> ~/.profile
+        echo 'export PATH=$GOPATH/bin:/usr/local/go/bin:$PATH' >> ~/.profile
+        source ~/.profile
+        go version
+
+    - name: Clone cloudflared repository
+      run: |
+        git clone https://github.com/cloudflare/cloudflared
+        cd cloudflared
+        ./.teamcity/install-cloudflare-go.sh
+
+    - name: Build cloudflared
+      run: |
+        source ~/.profile
+        cd cloudflared
+        PATH="/tmp/go/bin:$PATH" gmake cloudflared
+
+    - name: Upload cloudflared binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: cloudflared
+        path: cloudflared/cloudflared
