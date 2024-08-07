@@ -17,25 +17,28 @@ FILE_PATH="/home/${USER,,}/.s5"
 
 ###################################################
 
-socks5_config(){
-# 提示用户输入socks5端口号
-read -p "请输入socks5端口号: " SOCKS5_PORT
+socks5_config() {
+  # 提示用户输入socks5端口号
+  read -p "请输入socks5端口号: " SOCKS5_PORT
 
-# 提示用户输入用户名和密码
-read -p "请输入socks5用户名: " SOCKS5_USER
+  # 提示用户输入用户名和密码
+  read -p "请输入socks5用户名: " SOCKS5_USER
 
-while true; do
-  read -p "请输入socks5密码（不能包含@和:）：" SOCKS5_PASS
-  echo
-  if [[ "$SOCKS5_PASS" == *"@"* || "$SOCKS5_PASS" == *":"* ]]; then
-    echo "密码中不能包含@和:符号，请重新输入。"
-  else
-    break
-  fi
-done
+  while true; do
+    read -p "请输入socks5密码（不能包含@和:）：" SOCKS5_PASS
+    echo
+    if [[ "$SOCKS5_PASS" == *"@"* || "$SOCKS5_PASS" == *":"* ]]; then
+      echo "密码中不能包含@和:符号，请重新输入。"
+    else
+      break
+    fi
+  done
 
-# config.js文件
-  cat > ${FILE_PATH}/config.json << EOF
+  # 创建配置文件目录（如果不存在）
+  mkdir -p "$FILE_PATH"
+
+  # config.json文件
+  cat > "${FILE_PATH}/config.json" << EOF
 {
   "log": {
     "access": "/dev/null",
