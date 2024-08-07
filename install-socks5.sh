@@ -34,9 +34,6 @@ socks5_config() {
     fi
   done
 
-  # 创建配置文件目录（如果不存在）
-  mkdir -p "$FILE_PATH"
-
   # config.json文件
   cat > "${FILE_PATH}/config.json" << EOF
 {
